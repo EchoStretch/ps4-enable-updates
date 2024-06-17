@@ -3,6 +3,7 @@
 #define DEBUG_PORT 9023
 
 #include "ps4.h"
+#include <sys/stat.h>
 
 int _main(struct thread *td) {
   UNUSED(td);
@@ -16,16 +17,25 @@ int _main(struct thread *td) {
 #endif
 
   jailbreak();
-
   initSysUtil();
 
   unlink("/update/PS4UPDATE.PUP.net.temp");
   rmdir("/update/PS4UPDATE.PUP.net.temp");
 
+  struct stat st;
+  if (stat("/update/PS4UPDATE.PUP.net.temp", &st) == 0) {
+    printf_notification("Failed to remove /update/PS4UPDATE.PUP.net.temp");
+  }
+
   unlink("/update/PS4UPDATE.PUP");
   rmdir("/update/PS4UPDATE.PUP");
 
-  printf_notification("Enabled updates!");
+  if (stat("/update/PS4UPDATE.PUP", &st) == 0) {
+    printf_notification("Failed to remove /update/PS4UPDATE.PUP");
+  }
+  get_firmware_string(fw_version);
+
+  printf_notification("Enabled updates!\nPS4 Firmware %s", fw_version);
 
 #ifdef DEBUG_SOCKET
   printf_debug("Closing socket...\n");
@@ -34,3 +44,4 @@ int _main(struct thread *td) {
 
   return 0;
 }
+
