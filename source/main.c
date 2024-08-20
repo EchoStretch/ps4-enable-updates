@@ -25,7 +25,9 @@ int _main(struct thread *td) {
   unlink("/update/PS4UPDATE.PUP");
   rmdir("/update/PS4UPDATE.PUP");
 
-  printf_notification("Enabled updates!");
+  char fw_version[6] = {0};
+  get_firmware_string(fw_version);
+  printf_notification("Enabled updates!\nPS4 Firmware %s", fw_version);
 
 #ifdef DEBUG_SOCKET
   printf_debug("Closing socket...\n");
